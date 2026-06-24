@@ -17,3 +17,4 @@ secrets.yaml
 # Never commit decompiled vendor sources
 apk/
 *.apk
+publish.sh
