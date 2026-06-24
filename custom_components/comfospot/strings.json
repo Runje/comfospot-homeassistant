@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "ComfoSpot",
+        "description": "Enter the IP address of your ComfoControl gateway. If it was found automatically, the field is pre-filled.",
+        "data": {
+          "host": "Host / IP address",
+          "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Check the IP address and that the gateway is reachable on the local network."
+    },
+    "abort": {
+      "already_configured": "This ComfoSpot is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "co2": { "name": "Air quality" },
+      "devices": { "name": "Devices in mesh" }
+    },
+    "number": {
+      "target_temperature": { "name": "Target temperature" }
+    }
+  }
+}
