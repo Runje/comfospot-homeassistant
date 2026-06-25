@@ -38,6 +38,7 @@ ZONE_SENSORS: tuple[ComfoSpotZoneSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda z: z.get("temperature"),
     ),
     ComfoSpotZoneSensorDescription(
@@ -45,6 +46,7 @@ ZONE_SENSORS: tuple[ComfoSpotZoneSensorDescription, ...] = (
         device_class=SensorDeviceClass.HUMIDITY,
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
         value_fn=lambda z: z.get("humidity"),
     ),
 )
@@ -64,6 +66,7 @@ SYSTEM_SENSORS: tuple[ComfoSpotSystemSensorDescription, ...] = (
         device_class=SensorDeviceClass.CO2,
         native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
         state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
         value_fn=lambda s: s.get("co2"),
     ),
     ComfoSpotSystemSensorDescription(
