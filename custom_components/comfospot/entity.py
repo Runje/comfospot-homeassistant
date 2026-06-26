@@ -15,11 +15,16 @@ class ComfoSpotEntity(CoordinatorEntity[ComfoSpotCoordinator]):
 
     def __init__(self, coordinator: ComfoSpotCoordinator) -> None:
         super().__init__(coordinator)
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, coordinator.entry.entry_id)},
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        firmware = self.coordinator.data.get("system", {}).get("firmware")
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.coordinator.entry.entry_id)},
             name="ComfoSpot",
             manufacturer="Zehnder / getair",
             model="ComfoSpot 55",
+            sw_version=firmware,
         )
 
 
@@ -29,13 +34,16 @@ class ComfoSpotZoneEntity(ComfoSpotEntity):
     def __init__(self, coordinator: ComfoSpotCoordinator, addr: int) -> None:
         super().__init__(coordinator)
         self._addr = addr
-        zone_name = self._zone.get("name") or f"Zone {addr}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, f"{coordinator.entry.entry_id}_zone{addr}")},
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        zone_name = self._zone.get("name") or f"Zone {self._addr}"
+        return DeviceInfo(
+            identifiers={(DOMAIN, f"{self.coordinator.entry.entry_id}_zone{self._addr}")},
             name=zone_name,
             manufacturer="Zehnder / getair",
             model="ComfoSpot 55",
-            via_device=(DOMAIN, coordinator.entry.entry_id),
+            via_device=(DOMAIN, self.coordinator.entry.entry_id),
         )
 
     @property

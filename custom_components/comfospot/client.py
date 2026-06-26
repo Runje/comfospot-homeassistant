@@ -24,8 +24,10 @@ from .const import (
     PID_NAME,
     PID_OBJ_ADDR,
     PID_SPEED,
+    PID_RUN_HOURS,
     PID_SYS_CO2,
     PID_SYS_DEVICES,
+    PID_SYS_FIRMWARE,
     PID_TARGET_TEMP,
     PID_TEMPERATURE,
     ZONE_UUID_BASE,
@@ -220,6 +222,23 @@ def _u8(state, key):
     return None
 
 
+def _u32(state, key):
+    v = state.get(key)
+    if v and len(v[1]) >= 4:
+        return struct.unpack("<I", v[1][:4])[0]
+    return None
+
+
+def _str_val(state, key):
+    v = state.get(key)
+    if v and v[1]:
+        try:
+            return v[1].decode("utf-8").strip("\x00").strip() or None
+        except UnicodeDecodeError:
+            return None
+    return None
+
+
 class ComfoSpot:
     """High-level, thread-safe ComfoSpot system facade."""
 
@@ -309,13 +328,16 @@ class ComfoSpot:
                 "target_temp": _f32(st, (addr, PID_TARGET_TEMP)),
                 "humidity": _f32(st, (addr, PID_HUMIDITY)),
                 "temperature": _f32(st, (addr, PID_TEMPERATURE)),
+                "run_hours": _u32(st, (addr, PID_RUN_HOURS)),
             }
-        system: dict = {"co2": None, "devices": None}
+        system: dict = {"co2": None, "devices": None, "firmware": None}
         for addr in self.sys_addrs:
             if system["co2"] is None:
                 system["co2"] = _f32(st, (addr, PID_SYS_CO2))
             if system["devices"] is None:
                 system["devices"] = _u8(st, (addr, PID_SYS_DEVICES))
+            if system["firmware"] is None:
+                system["firmware"] = _str_val(st, (addr, PID_SYS_FIRMWARE))
         return {"zones": zones, "system": system}
 
     def set_stage(self, addr: int, stage: int) -> None:

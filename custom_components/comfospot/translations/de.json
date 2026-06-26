@@ -20,7 +20,8 @@
   "entity": {
     "sensor": {
       "co2": { "name": "Luftqualität" },
-      "devices": { "name": "Geräte im Mesh" }
+      "devices": { "name": "Geräte im Mesh" },
+      "run_hours": { "name": "Betriebsstunden" }
     },
     "number": {
       "target_temperature": { "name": "Zieltemperatur" }

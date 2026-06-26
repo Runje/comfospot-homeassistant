@@ -16,6 +16,7 @@ from homeassistant.const import (
     PERCENTAGE,
     EntityCategory,
     UnitOfTemperature,
+    UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -48,6 +49,16 @@ ZONE_SENSORS: tuple[ComfoSpotZoneSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         value_fn=lambda z: z.get("humidity"),
+    ),
+    ComfoSpotZoneSensorDescription(
+        key="run_hours",
+        translation_key="run_hours",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=0,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda z: z.get("run_hours"),
     ),
 )
 

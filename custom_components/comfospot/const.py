@@ -27,6 +27,10 @@ PID_OBJ_ADDR = 0x1002     # assigned object/client address
 # System object property IDs (FlakeVentilationSystem, abbc9241-...-776c)
 PID_SYS_CO2 = 0x1041      # float, air quality / CO2 (ppm)
 PID_SYS_DEVICES = 0x1044  # uint8, devices in the BLE mesh (best-effort)
+PID_SYS_FIRMWARE = 0x2101  # string, firmware version
+
+# Shared property IDs (same PID on both zone and system object)
+PID_RUN_HOURS = 0x2005     # uint32, operating hours (read-only)
 
 # Zone FlakeObject UUID base (last byte varies per zone/system object)
 ZONE_UUID_BASE = bytes.fromhex("abbc92414886407f8e36e26d0b6477")  # 15 bytes
