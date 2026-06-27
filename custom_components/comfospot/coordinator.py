@@ -41,6 +41,10 @@ class ComfoSpotCoordinator(DataUpdateCoordinator[dict]):
         """Set the fan stage for a zone (executor)."""
         await self.hass.async_add_executor_job(self.api.set_stage, addr, stage)
 
+    async def async_set_mode(self, addr: int, mode: int) -> None:
+        """Set the ventilation mode for a zone (executor)."""
+        await self.hass.async_add_executor_job(self.api.set_mode, addr, mode)
+
     async def async_set_target_temp(self, addr: int, temp: float) -> None:
         """Set the target temperature for a zone (executor)."""
         await self.hass.async_add_executor_job(self.api.set_target_temp, addr, temp)

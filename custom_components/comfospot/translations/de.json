@@ -25,6 +25,16 @@
     },
     "number": {
       "target_temperature": { "name": "Zieltemperatur" }
+    },
+    "select": {
+      "ventilation_mode": {
+        "name": "Lüftungsmodus",
+        "state": {
+          "exhaust":     "Abluft",
+          "supply":      "Zuluft",
+          "alternating": "Wechselbetrieb"
+        }
+      }
     }
   }
 }

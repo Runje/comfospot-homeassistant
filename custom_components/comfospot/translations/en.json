@@ -24,6 +24,16 @@
     },
     "number": {
       "target_temperature": { "name": "Target temperature" }
+    },
+    "select": {
+      "ventilation_mode": {
+        "name": "Ventilation mode",
+        "state": {
+          "exhaust":     "Exhaust only",
+          "supply":      "Supply only",
+          "alternating": "Alternating"
+        }
+      }
     }
   }
 }

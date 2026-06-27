@@ -10,7 +10,7 @@ from .client import ComfoSpot, ComfoSpotError
 from .const import DEFAULT_PORT, DOMAIN
 from .coordinator import ComfoSpotCoordinator
 
-PLATFORMS: list[Platform] = [Platform.FAN, Platform.NUMBER, Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.FAN, Platform.NUMBER, Platform.SELECT, Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
