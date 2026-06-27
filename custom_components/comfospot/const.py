@@ -33,14 +33,13 @@ PID_SYS_FIRMWARE = 0x2101  # string, firmware version
 PID_RUN_HOURS = 0x2005     # uint32, operating hours (read-only)
 
 # Ventilation mode values for PID_MODE (low nibble; high nibble = auto-direction)
-MODE_EXHAUST     = 0x00  # Abluft  – both fans extract  (2 arrows left)
-MODE_SUPPLY      = 0x01  # Zuluft  – both fans supply   (2 arrows right)
-MODE_ALTERNATING = 0x02  # Wechsel – alternating supply/exhaust (crossing arrows)
-
+# 0x00 = Abluft  – both fans extract  (2 arrows left)
+# 0x01 = Zuluft  – both fans supply   (2 arrows right)
+# 0x02 = Wechsel – alternating supply/exhaust (crossing arrows)
 MODES: dict[str, int] = {
-    "exhaust":     MODE_EXHAUST,
-    "supply":      MODE_SUPPLY,
-    "alternating": MODE_ALTERNATING,
+    "exhaust":     0x00,
+    "supply":      0x01,
+    "alternating": 0x02,
 }
 MODES_INV: dict[int, str] = {v: k for k, v in MODES.items()}
 
