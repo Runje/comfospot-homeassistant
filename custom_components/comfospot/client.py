@@ -357,6 +357,14 @@ class ComfoSpot:
             if reply is None:
                 raise ComfoSpotError("No reply from gateway when setting stage")
 
+    def set_mode(self, addr: int, mode: int) -> None:
+        """Set the ventilation mode (0=exhaust, 1=supply, 2=alternating)."""
+        with self._lock:
+            self._ensure()
+            reply = self._client.set_property(addr, 6, PID_MODE, bytes([mode & 0x0F]))
+            if reply is None:
+                raise ComfoSpotError("No reply from gateway when setting mode")
+
     def set_target_temp(self, addr: int, temp: float) -> None:
         with self._lock:
             self._ensure()

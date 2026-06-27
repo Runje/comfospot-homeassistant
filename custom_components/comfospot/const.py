@@ -32,6 +32,17 @@ PID_SYS_FIRMWARE = 0x2101  # string, firmware version
 # Shared property IDs (same PID on both zone and system object)
 PID_RUN_HOURS = 0x2005     # uint32, operating hours (read-only)
 
+# Ventilation mode values for PID_MODE (low nibble; high nibble = auto-direction)
+# 0x00 = Abluft  – both fans extract  (2 arrows left)
+# 0x01 = Zuluft  – both fans supply   (2 arrows right)
+# 0x02 = Wechsel – alternating supply/exhaust (crossing arrows)
+MODES: dict[str, int] = {
+    "exhaust":     0x00,
+    "supply":      0x01,
+    "alternating": 0x02,
+}
+MODES_INV: dict[int, str] = {v: k for k, v in MODES.items()}
+
 # Zone FlakeObject UUID base (last byte varies per zone/system object)
 ZONE_UUID_BASE = bytes.fromhex("abbc92414886407f8e36e26d0b6477")  # 15 bytes
 ZONE_UUID_LAST_RANGE = range(0x6C, 0x74)
