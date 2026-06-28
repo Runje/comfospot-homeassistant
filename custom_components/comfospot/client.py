@@ -24,12 +24,12 @@ from .const import (
     PID_NAME,
     PID_OBJ_ADDR,
     PID_SPEED,
-    PID_RUN_HOURS,
     PID_SYS_CO2,
-    PID_SYS_DEVICES,
     PID_SYS_FIRMWARE,
+    PID_SYS_RUN_HOURS,
     PID_TARGET_TEMP,
     PID_TEMPERATURE,
+    PID_UNKNOWN_1043,
     ZONE_UUID_BASE,
     ZONE_UUID_LAST_RANGE,
 )
@@ -328,14 +328,15 @@ class ComfoSpot:
                 "target_temp": _f32(st, (addr, PID_TARGET_TEMP)),
                 "humidity": _f32(st, (addr, PID_HUMIDITY)),
                 "temperature": _f32(st, (addr, PID_TEMPERATURE)),
-                "run_hours": _u32(st, (addr, PID_RUN_HOURS)),
             }
-        system: dict = {"co2": None, "devices": None, "firmware": None}
+        system: dict = {"co2": None, "run_hours": None, "unknown_1043": None, "firmware": None}
         for addr in self.sys_addrs:
             if system["co2"] is None:
                 system["co2"] = _f32(st, (addr, PID_SYS_CO2))
-            if system["devices"] is None:
-                system["devices"] = _u8(st, (addr, PID_SYS_DEVICES))
+            if system["run_hours"] is None:
+                system["run_hours"] = _u32(st, (addr, PID_SYS_RUN_HOURS))
+            if system["unknown_1043"] is None:
+                system["unknown_1043"] = _f32(st, (addr, PID_UNKNOWN_1043))
             if system["firmware"] is None:
                 system["firmware"] = _str_val(st, (addr, PID_SYS_FIRMWARE))
         return {"zones": zones, "system": system}

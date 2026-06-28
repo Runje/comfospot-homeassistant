@@ -20,7 +20,8 @@
   "entity": {
     "sensor": {
       "co2": { "name": "Air quality" },
-      "devices": { "name": "Devices in mesh" }
+      "run_hours": { "name": "Operating hours" },
+      "unknown_1043": { "name": "Unknown 0x1043" }
     },
     "number": {
       "target_temperature": { "name": "Target temperature" }

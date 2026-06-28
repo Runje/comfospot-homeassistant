@@ -25,12 +25,10 @@ PID_OBJ_UUID = 0x1001     # query key (uuid)
 PID_OBJ_ADDR = 0x1002     # assigned object/client address
 
 # System object property IDs (FlakeVentilationSystem, abbc9241-...-776c)
-PID_SYS_CO2 = 0x1041      # float, air quality / CO2 (ppm)
-PID_SYS_DEVICES = 0x1044  # uint8, devices in the BLE mesh (best-effort)
-PID_SYS_FIRMWARE = 0x2101  # string, firmware version
-
-# Shared property IDs (same PID on both zone and system object)
-PID_RUN_HOURS = 0x2005     # uint32, operating hours (read-only)
+PID_SYS_CO2 = 0x1041        # float, air quality / CO2 (ppm)
+PID_SYS_RUN_HOURS = 0x1005  # uint32, system operating hours
+PID_SYS_FIRMWARE = 0x2101   # string, firmware version
+PID_UNKNOWN_1043 = 0x1043   # float, unknown – likely internal temperature or motor temp
 
 # Ventilation mode values for PID_MODE (low nibble; high nibble = auto-direction)
 # 0x00 = Abluft  – both fans extract  (2 arrows left)

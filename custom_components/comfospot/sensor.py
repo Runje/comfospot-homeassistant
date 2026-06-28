@@ -50,16 +50,6 @@ ZONE_SENSORS: tuple[ComfoSpotZoneSensorDescription, ...] = (
         suggested_display_precision=1,
         value_fn=lambda z: z.get("humidity"),
     ),
-    ComfoSpotZoneSensorDescription(
-        key="run_hours",
-        translation_key="run_hours",
-        device_class=SensorDeviceClass.DURATION,
-        native_unit_of_measurement=UnitOfTime.HOURS,
-        state_class=SensorStateClass.TOTAL_INCREASING,
-        suggested_display_precision=0,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda z: z.get("run_hours"),
-    ),
 )
 
 
@@ -81,12 +71,23 @@ SYSTEM_SENSORS: tuple[ComfoSpotSystemSensorDescription, ...] = (
         value_fn=lambda s: s.get("co2"),
     ),
     ComfoSpotSystemSensorDescription(
-        key="devices",
-        translation_key="devices",
-        icon="mdi:fan",
-        state_class=SensorStateClass.MEASUREMENT,
+        key="run_hours",
+        translation_key="run_hours",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=0,
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda s: s.get("devices"),
+        value_fn=lambda s: s.get("run_hours"),
+    ),
+    ComfoSpotSystemSensorDescription(
+        key="unknown_1043",
+        translation_key="unknown_1043",
+        icon="mdi:help-circle-outline",
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=2,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda s: s.get("unknown_1043"),
     ),
 )
 
