@@ -13,8 +13,13 @@ from .coordinator import ComfoSpotCoordinator
 
 PLATFORMS: list[Platform] = [Platform.FAN, Platform.NUMBER, Platform.SELECT, Platform.SENSOR]
 
-# Entity keys that were removed in previous versions and must be cleaned up.
-_REMOVED_UNIQUE_ID_SUFFIXES = ("_system_devices",)
+import re as _re
+
+# Patterns matching unique_ids of entities removed in previous versions.
+_STALE_UID_PATTERNS = (
+    _re.compile(r"_system_devices$"),        # removed in 0.1.5: always-3 BLE mesh counter
+    _re.compile(r"_zone\d+_run_hours$"),     # removed in 0.1.5: moved to system sensor
+)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -39,7 +44,7 @@ def _remove_stale_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
     registry = er.async_get(hass)
     for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
         uid = entity_entry.unique_id or ""
-        if any(uid.endswith(suffix) for suffix in _REMOVED_UNIQUE_ID_SUFFIXES):
+        if any(p.search(uid) for p in _STALE_UID_PATTERNS):
             registry.async_remove(entity_entry.entity_id)
 
 
