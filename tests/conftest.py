@@ -28,7 +28,7 @@ ha.const = _make_stub(
     EntityCategory=type("EntityCategory", (), {"DIAGNOSTIC": "diagnostic"})(),
     UnitOfTemperature=type("UnitOfTemperature", (), {"CELSIUS": "°C"})(),
     UnitOfTime=type("UnitOfTime", (), {"HOURS": "h"})(),
-    CONCENTRATION_PARTS_PER_MILLION="ppm",
+    UnitOfPressure=type("UnitOfPressure", (), {"HPA": "hPa"})(),
     Platform=type("Platform", (), {
         "FAN": "fan", "NUMBER": "number", "SELECT": "select", "SENSOR": "sensor",
     })(),
@@ -45,10 +45,12 @@ ha.helpers.entity_registry = types.ModuleType("homeassistant.helpers.entity_regi
 
 sensor_mod = types.ModuleType("homeassistant.components.sensor")
 sensor_mod.SensorDeviceClass = type("SensorDeviceClass", (), {
-    "CO2": "carbon_dioxide",
+    "AQI": "aqi",
+    "ATMOSPHERIC_PRESSURE": "atmospheric_pressure",
     "HUMIDITY": "humidity",
     "TEMPERATURE": "temperature",
     "DURATION": "duration",
+    "ENUM": "enum",
 })()
 sensor_mod.SensorEntity = object
 sensor_mod.SensorEntityDescription = object

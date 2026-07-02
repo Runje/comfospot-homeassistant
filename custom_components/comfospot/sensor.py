@@ -12,16 +12,16 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     PERCENTAGE,
     EntityCategory,
+    UnitOfPressure,
     UnitOfTemperature,
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, IAQ_ACCURACY_STATES
 from .coordinator import ComfoSpotCoordinator
 from .entity import ComfoSpotEntity, ComfoSpotZoneEntity
 
@@ -57,18 +57,26 @@ ZONE_SENSORS: tuple[ComfoSpotZoneSensorDescription, ...] = (
 class ComfoSpotSystemSensorDescription(SensorEntityDescription):
     """Describes a system-wide sensor."""
 
-    value_fn: Callable[[dict], float | int | None]
+    value_fn: Callable[[dict], float | int | str | None]
 
 
 SYSTEM_SENSORS: tuple[ComfoSpotSystemSensorDescription, ...] = (
     ComfoSpotSystemSensorDescription(
-        key="co2",
-        translation_key="co2",
-        device_class=SensorDeviceClass.CO2,
-        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        key="air_quality",
+        translation_key="air_quality",
+        device_class=SensorDeviceClass.AQI,
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
-        value_fn=lambda s: s.get("co2"),
+        value_fn=lambda s: s.get("air_quality"),
+    ),
+    ComfoSpotSystemSensorDescription(
+        key="pressure",
+        translation_key="pressure",
+        device_class=SensorDeviceClass.ATMOSPHERIC_PRESSURE,
+        native_unit_of_measurement=UnitOfPressure.HPA,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        value_fn=lambda s: s.get("pressure"),
     ),
     ComfoSpotSystemSensorDescription(
         key="run_hours",
@@ -81,13 +89,12 @@ SYSTEM_SENSORS: tuple[ComfoSpotSystemSensorDescription, ...] = (
         value_fn=lambda s: s.get("run_hours"),
     ),
     ComfoSpotSystemSensorDescription(
-        key="unknown_1043",
-        translation_key="unknown_1043",
-        icon="mdi:help-circle-outline",
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=2,
+        key="iaq_accuracy",
+        translation_key="iaq_accuracy",
+        device_class=SensorDeviceClass.ENUM,
+        options=list(IAQ_ACCURACY_STATES.values()),
         entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda s: s.get("unknown_1043"),
+        value_fn=lambda s: IAQ_ACCURACY_STATES.get(s.get("iaq_accuracy")),
     ),
 )
 
@@ -143,5 +150,5 @@ class ComfoSpotSystemSensor(ComfoSpotEntity, SensorEntity):
         self._attr_unique_id = f"{coordinator.entry.entry_id}_system_{description.key}"
 
     @property
-    def native_value(self) -> float | int | None:
+    def native_value(self) -> float | int | str | None:
         return self.entity_description.value_fn(self.coordinator.data["system"])

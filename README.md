@@ -37,8 +37,8 @@ show up as native Home Assistant entities, set up entirely through the UI.
 - 🌀 **Fan control** per zone — on/off and stages 1–4
 - 🎯 **Target temperature** as a `number` entity (15–30 °C)
 - 🌡️ **Temperature** and 💧 **humidity** per zone
-- 🫁 **Air quality** (CO₂, ppm)
-- 🔧 **Devices in mesh** (diagnostic) — best-effort count of connected fan units
+- 🫁 **Air quality index** (Bosch BSEC IAQ, 0–500, lower is better)
+- 🌤️ **Barometric pressure** (hPa)
 - 🔍 **Auto-discovery** of the gateway via UDP broadcast
 - 🏠 **100 % local** — `local_polling`, no cloud dependency, no credentials
 
@@ -82,8 +82,17 @@ is unauthenticated).
 | `number.<zone>_target_temperature` | Number | 15–30 °C |
 | `sensor.<zone>_temperature` | Sensor | Indoor temperature |
 | `sensor.<zone>_humidity` | Sensor | Indoor relative humidity |
-| `sensor.comfospot_air_quality` | Sensor | CO₂ in ppm |
-| `sensor.comfospot_devices_in_mesh` | Sensor | Diagnostic, best-effort |
+| `sensor.comfospot_air_quality_index` | Sensor | Bosch BSEC IAQ, 0–500, lower is better |
+| `sensor.comfospot_air_pressure` | Sensor | Barometric pressure in hPa |
+| `sensor.comfospot_operating_hours` | Sensor | Diagnostic |
+| `sensor.comfospot_air_quality_sensor_status` | Sensor | Diagnostic — BSEC calibration state |
+
+The gateway carries a BME680-style environmental sensor; its properties mirror
+the vendor app's `humidity` / `pressure` / `temperature` / `airQualityIndex` /
+`airQualityIndexAccuracy` domain model. In versions before 0.1.8 the pressure
+reading was mislabelled as CO₂ and the IAQ index was exposed as "Unknown
+0x1043"; existing entities are migrated automatically (history is kept, but
+Home Assistant may warn once about the changed unit of the former CO₂ sensor).
 
 The gateway is added as a hub device, and each ventilation zone appears as a
 sub-device linked to it.
@@ -105,8 +114,6 @@ are presented as one fan.
 - **Per-fan values are not exposed.** The gateway publishes only aggregated,
   per-zone values over the network. Individual fan readings live in the internal
   Bluetooth-mesh layer, which is not reachable over the LAN protocol.
-- **"Devices in mesh"** is a best-effort reading; its exact semantics are not
-  officially documented.
 - **UDP must reach the gateway.** The gateway only opens its TCP control port
   after receiving a UDP discovery packet, so Home Assistant and the gateway
   should be able to exchange UDP broadcasts (same subnet recommended).

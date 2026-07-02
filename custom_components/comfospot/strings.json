@@ -19,9 +19,18 @@
   },
   "entity": {
     "sensor": {
-      "co2": { "name": "Air quality" },
+      "air_quality": { "name": "Air quality index" },
+      "pressure": { "name": "Air pressure" },
       "run_hours": { "name": "Operating hours" },
-      "unknown_1043": { "name": "Unknown 0x1043" }
+      "iaq_accuracy": {
+        "name": "Air quality sensor status",
+        "state": {
+          "run_in": "Run-in",
+          "calibration_required": "Calibration required",
+          "calibrating": "Calibrating",
+          "calibrated": "Calibrated"
+        }
+      }
     },
     "number": {
       "target_temperature": { "name": "Target temperature" }

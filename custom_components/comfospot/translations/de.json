@@ -19,9 +19,18 @@
   },
   "entity": {
     "sensor": {
-      "co2": { "name": "Luftqualität" },
+      "air_quality": { "name": "Luftqualitätsindex" },
+      "pressure": { "name": "Luftdruck" },
       "run_hours": { "name": "Betriebsstunden" },
-      "unknown_1043": { "name": "Unbekannt 0x1043" }
+      "iaq_accuracy": {
+        "name": "Status Luftqualitätssensor",
+        "state": {
+          "run_in": "Einlaufphase",
+          "calibration_required": "Kalibrierung erforderlich",
+          "calibrating": "Kalibrierung läuft",
+          "calibrated": "Kalibriert"
+        }
+      }
     },
     "number": {
       "target_temperature": { "name": "Zieltemperatur" }
