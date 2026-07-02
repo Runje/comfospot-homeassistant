@@ -24,12 +24,13 @@ from .const import (
     PID_NAME,
     PID_OBJ_ADDR,
     PID_SPEED,
-    PID_SYS_CO2,
+    PID_SYS_AIR_QUALITY,
     PID_SYS_FIRMWARE,
+    PID_SYS_IAQ_ACCURACY,
+    PID_SYS_PRESSURE,
     PID_SYS_RUN_HOURS,
     PID_TARGET_TEMP,
     PID_TEMPERATURE,
-    PID_UNKNOWN_1043,
     ZONE_UUID_BASE,
     ZONE_UUID_LAST_RANGE,
 )
@@ -329,14 +330,22 @@ class ComfoSpot:
                 "humidity": _f32(st, (addr, PID_HUMIDITY)),
                 "temperature": _f32(st, (addr, PID_TEMPERATURE)),
             }
-        system: dict = {"co2": None, "run_hours": None, "unknown_1043": None, "firmware": None}
+        system: dict = {
+            "pressure": None,
+            "air_quality": None,
+            "iaq_accuracy": None,
+            "run_hours": None,
+            "firmware": None,
+        }
         for addr in self.sys_addrs:
-            if system["co2"] is None:
-                system["co2"] = _f32(st, (addr, PID_SYS_CO2))
+            if system["pressure"] is None:
+                system["pressure"] = _f32(st, (addr, PID_SYS_PRESSURE))
+            if system["air_quality"] is None:
+                system["air_quality"] = _f32(st, (addr, PID_SYS_AIR_QUALITY))
+            if system["iaq_accuracy"] is None:
+                system["iaq_accuracy"] = _u8(st, (addr, PID_SYS_IAQ_ACCURACY))
             if system["run_hours"] is None:
                 system["run_hours"] = _u32(st, (addr, PID_SYS_RUN_HOURS))
-            if system["unknown_1043"] is None:
-                system["unknown_1043"] = _f32(st, (addr, PID_UNKNOWN_1043))
             if system["firmware"] is None:
                 system["firmware"] = _str_val(st, (addr, PID_SYS_FIRMWARE))
         return {"zones": zones, "system": system}

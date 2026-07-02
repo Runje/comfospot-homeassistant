@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, "custom_components")
 
-from comfospot import _STALE_UID_PATTERNS
+from comfospot import _STALE_UID_PATTERNS, _UID_MIGRATIONS
 
 
 class TestStaleUidPatterns:
@@ -27,6 +27,7 @@ class TestStaleUidPatterns:
         assert not self._matches("abc123_system_run_hours")
 
     def test_co2_kept(self):
+        """Migrated (renamed) in 0.1.8, so it must never be stale-removed."""
         assert not self._matches("abc123_system_co2")
 
     def test_zone_temperature_kept(self):
@@ -36,4 +37,26 @@ class TestStaleUidPatterns:
         assert not self._matches("abc123_zone8_humidity")
 
     def test_unknown_1043_kept(self):
+        """Migrated (renamed) in 0.1.8, so it must never be stale-removed."""
         assert not self._matches("abc123_system_unknown_1043")
+
+
+class TestUidMigrations:
+    def _migrated(self, uid: str) -> str:
+        for old, new in _UID_MIGRATIONS.items():
+            if uid.endswith(old):
+                return uid[: -len(old)] + new
+        return uid
+
+    def test_co2_becomes_pressure(self):
+        assert self._migrated("abc123_system_co2") == "abc123_system_pressure"
+
+    def test_unknown_1043_becomes_air_quality(self):
+        assert self._migrated("abc123_system_unknown_1043") == "abc123_system_air_quality"
+
+    def test_unrelated_uid_untouched(self):
+        assert self._migrated("abc123_zone8_humidity") == "abc123_zone8_humidity"
+
+    def test_new_uids_not_migrated_again(self):
+        assert self._migrated("abc123_system_pressure") == "abc123_system_pressure"
+        assert self._migrated("abc123_system_air_quality") == "abc123_system_air_quality"

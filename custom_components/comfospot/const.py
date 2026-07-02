@@ -25,10 +25,22 @@ PID_OBJ_UUID = 0x1001     # query key (uuid)
 PID_OBJ_ADDR = 0x1002     # assigned object/client address
 
 # System object property IDs (FlakeVentilationSystem, abbc9241-...-776c)
-PID_SYS_CO2 = 0x1041        # float, air quality / CO2 (ppm)
 PID_SYS_RUN_HOURS = 0x1005  # uint32, system operating hours
 PID_SYS_FIRMWARE = 0x2101   # string, firmware version
-PID_UNKNOWN_1043 = 0x1043   # float, unknown – likely internal temperature or motor temp
+
+# The 0x1040-0x1044 block mirrors the app domain properties 8256-8260
+# (0x2040-0x2044): a BME680-style environmental sensor running Bosch BSEC.
+PID_SYS_PRESSURE = 0x1041      # float, barometric pressure (hPa)
+PID_SYS_AIR_QUALITY = 0x1043   # float, BSEC IAQ index (0-500, lower = better)
+PID_SYS_IAQ_ACCURACY = 0x1044  # uint8, BSEC calibration state, see below
+
+# BSEC IAQ accuracy levels (AirQualityAccuracy enum in the vendor app)
+IAQ_ACCURACY_STATES: dict[int, str] = {
+    0: "run_in",
+    1: "calibration_required",
+    2: "calibrating",
+    3: "calibrated",
+}
 
 # Ventilation mode values for PID_MODE (low nibble; high nibble = auto-direction)
 # 0x00 = Abluft  – both fans extract  (2 arrows left)

@@ -17,10 +17,11 @@ from comfospot.const import (
     PID_HUMIDITY,
     PID_MODE,
     PID_SPEED,
-    PID_SYS_CO2,
+    PID_SYS_AIR_QUALITY,
+    PID_SYS_IAQ_ACCURACY,
+    PID_SYS_PRESSURE,
     PID_SYS_RUN_HOURS,
     PID_TEMPERATURE,
-    PID_UNKNOWN_1043,
 )
 
 
@@ -51,20 +52,20 @@ def _str_entry(value: str) -> tuple[int, bytes]:
 
 class TestF32:
     def test_normal(self):
-        state = {(6, PID_SYS_CO2): _f32_entry(967.0)}
-        assert abs(_f32(state, (6, PID_SYS_CO2)) - 967.0) < 0.01
+        state = {(6, PID_SYS_PRESSURE): _f32_entry(967.0)}
+        assert abs(_f32(state, (6, PID_SYS_PRESSURE)) - 967.0) < 0.01
 
     def test_missing_key(self):
-        assert _f32({}, (6, PID_SYS_CO2)) is None
+        assert _f32({}, (6, PID_SYS_PRESSURE)) is None
 
     def test_wrong_length(self):
-        state = {(6, PID_SYS_CO2): (9, b"\x01\x02")}
-        assert _f32(state, (6, PID_SYS_CO2)) is None
+        state = {(6, PID_SYS_PRESSURE): (9, b"\x01\x02")}
+        assert _f32(state, (6, PID_SYS_PRESSURE)) is None
 
     def test_bytearray_value(self):
         """Gateway sends bytearray, not bytes — both must work."""
-        state = {(6, PID_SYS_CO2): (9, bytearray(struct.pack("<f", 500.0)))}
-        assert abs(_f32(state, (6, PID_SYS_CO2)) - 500.0) < 0.01
+        state = {(6, PID_SYS_PRESSURE): (9, bytearray(struct.pack("<f", 500.0)))}
+        assert abs(_f32(state, (6, PID_SYS_PRESSURE)) - 500.0) < 0.01
 
 
 # ---------------------------------------------------------------------------
@@ -124,9 +125,10 @@ def _make_live_state() -> dict:
     """Mirrors the state dict seen on the real device (from live dump)."""
     return {
         # --- system object (addr=6) ---
-        (6, PID_SYS_CO2):      _f32_entry(967.0),
+        (6, PID_SYS_PRESSURE):      _f32_entry(967.0),
         (6, PID_SYS_RUN_HOURS): _u32_entry(624),
-        (6, PID_UNKNOWN_1043): _f32_entry(31.36),
+        (6, PID_SYS_AIR_QUALITY): _f32_entry(31.36),
+        (6, PID_SYS_IAQ_ACCURACY): _u8_entry(3),
         # no firmware (0x2101) in this capture
         # --- zone object (addr=8) ---
         (8, PID_SPEED):        _f32_entry(4.0),
@@ -138,11 +140,12 @@ def _make_live_state() -> dict:
 
 def _snapshot(state: dict, zones: dict, sys_addrs: list) -> dict:
     """Exact copy of ComfoSpot._snapshot() for isolated testing."""
-    from comfospot.client import _f32, _u32, _str_val
+    from comfospot.client import _f32, _u8, _u32, _str_val
     from comfospot.const import (
         PID_HUMIDITY, PID_MODE, PID_SPEED,
-        PID_SYS_CO2, PID_SYS_FIRMWARE, PID_SYS_RUN_HOURS,
-        PID_TARGET_TEMP, PID_TEMPERATURE, PID_UNKNOWN_1043,
+        PID_SYS_AIR_QUALITY, PID_SYS_FIRMWARE, PID_SYS_IAQ_ACCURACY,
+        PID_SYS_PRESSURE, PID_SYS_RUN_HOURS,
+        PID_TARGET_TEMP, PID_TEMPERATURE,
     )
     result_zones = {}
     for addr, name in zones.items():
@@ -154,14 +157,22 @@ def _snapshot(state: dict, zones: dict, sys_addrs: list) -> dict:
             "humidity": _f32(state, (addr, PID_HUMIDITY)),
             "temperature": _f32(state, (addr, PID_TEMPERATURE)),
         }
-    system = {"co2": None, "run_hours": None, "unknown_1043": None, "firmware": None}
+    system = {
+        "pressure": None,
+        "air_quality": None,
+        "iaq_accuracy": None,
+        "run_hours": None,
+        "firmware": None,
+    }
     for addr in sys_addrs:
-        if system["co2"] is None:
-            system["co2"] = _f32(state, (addr, PID_SYS_CO2))
+        if system["pressure"] is None:
+            system["pressure"] = _f32(state, (addr, PID_SYS_PRESSURE))
+        if system["air_quality"] is None:
+            system["air_quality"] = _f32(state, (addr, PID_SYS_AIR_QUALITY))
+        if system["iaq_accuracy"] is None:
+            system["iaq_accuracy"] = _u8(state, (addr, PID_SYS_IAQ_ACCURACY))
         if system["run_hours"] is None:
             system["run_hours"] = _u32(state, (addr, PID_SYS_RUN_HOURS))
-        if system["unknown_1043"] is None:
-            system["unknown_1043"] = _f32(state, (addr, PID_UNKNOWN_1043))
         if system["firmware"] is None:
             system["firmware"] = _str_val(state, (addr, PID_SYS_FIRMWARE))
     return {"zones": result_zones, "system": system}
@@ -183,13 +194,17 @@ class TestSnapshot:
         data = _snapshot(self.state, self.zones, self.sys_addrs)
         assert data["system"]["run_hours"] == 624
 
-    def test_co2_value(self):
+    def test_pressure_value(self):
         data = _snapshot(self.state, self.zones, self.sys_addrs)
-        assert abs(data["system"]["co2"] - 967.0) < 0.1
+        assert abs(data["system"]["pressure"] - 967.0) < 0.1
 
-    def test_unknown_1043_value(self):
+    def test_air_quality_value(self):
         data = _snapshot(self.state, self.zones, self.sys_addrs)
-        assert data["system"]["unknown_1043"] is not None
+        assert abs(data["system"]["air_quality"] - 31.36) < 0.01
+
+    def test_iaq_accuracy_value(self):
+        data = _snapshot(self.state, self.zones, self.sys_addrs)
+        assert data["system"]["iaq_accuracy"] == 3
 
     def test_firmware_none_when_absent(self):
         data = _snapshot(self.state, self.zones, self.sys_addrs)
